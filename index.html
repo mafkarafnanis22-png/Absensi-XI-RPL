@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi XI RPL</title>
+    <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+   <div class="container">
+        <img src="rpl.png" alt="Logo Absensi" class="logo">
+        <h1>ABSENSI XI-RPL</h1>
+        <p class="subtitle">Scan QR Code atau Isi Manual</p>
+        
+        <!-- QR Code Section -->
+        <div class="qr-section">
+            <div class="qr-title">📱 Scan untuk Absen Cepat</div>
+            <div id="qrcode"></div>
+            <div class="qr-instruction">Arahkan kamera HP ke QR Code</div>
+        </div>
+        
+        <form id="absensiForm">
+            <label for="nomorAbsen">Nomor Absen:</label>
+            <input type="number" id="nomorAbsen" required min="1" placeholder="Contoh: 15">
+
+            <label for="nama">Nama Siswa/Siswi:</label>
+            <input type="text" id="nama" required placeholder="Contoh: Ahmad Fauzi">
+
+            <button type="submit">🚀 Kirim ke Grup WA</button>
+        </form>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        // 🚨 **GANTI INI SAJA - URL GRUP WHATSAPP ANDA**
+        const URL_GRUP_WA = 'https://chat.whatsapp.com/DWb3IXDdx3BHUjH7laWzF3'; 
+        // Contoh: https://chat.whatsapp.com/KL8mNopQrsTuv123456
+        
+        // Generate QR Code (SEKARANG UDAH BISA!)
+        function generateQR() {
+            const baseUrl = window.location.href.split('#')[0]; // Hapus hash
+            const qrUrl = `${baseUrl}#qr-${Date.now()}`;
+            new QRCode(document.getElementById("qrcode"), {
+                text: qrUrl,
+                width: 180,
+                height: 180,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+        
+        // Handle QR Scan - PERBAIKAN!
+        function handleQRScan() {
+            const hash = window.location.hash;
+            if (hash.startsWith('#qr-')) {
+                document.getElementById('message').innerHTML = 
+                    '<div class="info">📱 QR Code terdeteksi! Isi data di bawah 👇</div>';
+                document.getElementById('nomorAbsen').focus();
+                window.location.hash = '';
+            }
+        }
+        
+        // Submit ke Grup WA - 1 KLIK!
+        function submitAbsensi() {
+            const nomorAbsen = document.getElementById('nomorAbsen').value;
+            const nama = document.getElementById('nama').value;
+            const waktu = new Date().toLocaleString('id-ID', { 
+                hour: '2-digit', minute: '2-digit', 
+                day: '2-digit', month: 'long', year: 'numeric' 
+            });
+
+            const pesan = `🎯 *ABSENSI SISWA*\n` +
+                         `📋 Nomor Absen: ${nomorAbsen}\n` +
+                         `👤 Nama: ${nama}\n` +
+                         `⏰ Waktu: ${waktu}\n` +
+                         `✅ *HADIR*`;
+
+            // TRICK: Buka grup + pesan pre-filled
+            const encodedPesan = encodeURIComponent(pesan);
+            const urlWA = `https://chat.whatsapp.com/DWb3IXDdx3BHUjH7laWzF3 text=${encodedPesan}`;
+            
+            // 1. Buka WhatsApp dengan pesan
+            window.open(urlWA, '_blank');
+            
+            // 2. Pesan sukses
+            const messageEl = document.getElementById('message');
+            messageEl.innerHTML = 
+                `✅ Absensi ${nama} siap kirim!<br>` +
+                `<small>Copy pesan di WhatsApp → Paste di grup → Send</small>`;
+            messageEl.className = 'success';
+            
+            // 3. Auto copy ke clipboard (bonus!)
+            navigator.clipboard.writeText(pesan).then(() => {
+                messageEl.innerHTML += '<br><small>📋 Pesan sudah dicopy!</small>';
+            });
+        }
+        
+        // Event Listeners
+        document.getElementById('absensiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitAbsensi();
+        });
+        
+        // Init
+        window.addEventListener('load', function() {
+            generateQR();
+            handleQRScan();
+        });
+        window.addEventListener('hashchange', handleQRScan);
+    </script>
+</body>
+</html>
