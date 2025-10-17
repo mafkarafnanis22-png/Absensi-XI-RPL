@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-   <div class="container">
+<div class="container">
         <img src="rpl.png" alt="Logo Absensi Siswa" class="logo">
         <h1>ABSENSI XI-RPL</h1>
         <p class="subtitle">Isi Formulir untuk Absen</p>
@@ -19,7 +19,7 @@
             <label for="nama">Nama Siswa/Siswi:</label>
             <input type="text" id="nama" required placeholder="Contoh: Fatimatus Zahra">
 
-            <button type="submit">🚀 Kirim Absensi</button>
+            <button type="submit">🚀 Kirim Absensi ke Grup</button>
         </form>
         <div id="message"></div>
         
@@ -41,20 +41,20 @@
                 year: 'numeric'
             });
 
+            // PESAN ABSENSI YANG AKAN LANGSUNG DIKIRIM KE GRUP
             const pesan = `🎯 *ABSENSI XI-RPL*\n📋 Nomor Absen: ${nomorAbsen}\n👤 Nama: ${nama}\n⏰ Waktu: ${waktu}\n✅ *HADIR*`;
 
             const encodedPesan = encodeURIComponent(pesan);
-            const urlWA = `https://wa.me/?text=${encodedPesan}`;
+            
+            // URL LANGSUNG KE GRUP WA + PESAN PREFILLED
+            const urlGrupWA = `https://chat.whatsapp.com/CBQnRYNPz4bHwAFVxcbFnu?text=${encodedPesan}`;
 
-            // Buka WhatsApp dengan pesan pre-filled
-            window.open(urlWA, '_blank');
-
-            // Auto copy pesan ke clipboard untuk paste ke grup
-            navigator.clipboard.writeText(pesan);
+            // LANGSUNG BUK A WHATSAPP KE GRUP DENGAN PESAN SIAP KIRIM
+            window.open(urlGrupWA, '_blank');
 
             // Tampilkan pesan sukses
             const messageEl = document.getElementById('message');
-            messageEl.innerHTML = `✅ Absensi ${nama} siap dikirim!<br><small>Pesan sudah dicopy. Paste & kirim di grup WA!</small>`;
+            messageEl.innerHTML = `✅ Absensi ${nama} <strong>LANGSUNG TERKIRIM!</strong><br><small>WhatsApp grup sudah terbuka otomatis 😊</small>`;
             messageEl.className = 'success';
 
             // Reset form setelah 5 detik
