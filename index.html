@@ -52,6 +52,9 @@
             // LANGSUNG BUK A WHATSAPP KE GRUP DENGAN PESAN SIAP KIRIM
             window.open(urlGrupWA, '_blank');
 
+            // Auto copy pesan ke clipboard untuk paste ke grup
+            navigator.clipboard.writeText(pesan);
+
             // Tampilkan pesan sukses
             const messageEl = document.getElementById('message');
             messageEl.innerHTML = `✅ Absensi ${nama} <strong>LANGSUNG TERKIRIM!</strong><br><small>WhatsApp grup sudah terbuka otomatis 😊</small>`;
