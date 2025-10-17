@@ -5,6 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Absensi XI RPL</title>
     <link rel="stylesheet" href="style.css"/>
+    
+    <!-- ✅ FALLBACK COPY UNTUK SEMUA BROWSER -->
+    <script>
+        function copyToClipboard(text) {
+            // Method 1: Modern Clipboard API
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    console.log('✅ Modern copy OK');
+                }).catch(err => {
+                    console.log('❌ Modern copy fail:', err);
+                    fallbackCopy(text); // Fallback
+                });
+            } else {
+                fallbackCopy(text); // Fallback
+            }
+        }
+        
+        function fallbackCopy(text) {
+            // Method 2: Old School (PASTI JALAN!)
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                const successful = document.execCommand('copy');
+                console.log(successful ? '✅ Fallback copy OK' : '❌ Fallback copy FAIL');
+            } catch (err) {
+                console.log('❌ Fallback error:', err);
+            }
+            document.body.removeChild(textArea);
+        }
+    </script>
 </head>
 <body>
 <div class="container">
@@ -28,64 +64,54 @@
     </div>
 
     <script>
-    document.getElementById('absensiForm').addEventListener('submit', function(e) {
-        e.preventDefault();
+        document.getElementById('absensiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
 
-        const nomorAbsen = document.getElementById('nomorAbsen').value;
-        const nama = document.getElementById('nama').value;
-        const waktu = new Date().toLocaleString('id-ID', {
-            hour: '2-digit',
-            minute: '2-digit',
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric'
+            const nomorAbsen = document.getElementById('nomorAbsen').value;
+            const nama = document.getElementById('nama').value;
+            const waktu = new Date().toLocaleString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit',
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            });
+
+            // PESAN ABSENSI
+            const pesan = `🎯 *ABSENSI XI-RPL*\n📋 Nomor Absen: ${nomorAbsen}\n👤 Nama: ${nama}\n⏰ Waktu: ${waktu}\n✅ *HADIR*`;
+
+            const encodedPesan = encodeURIComponent(pesan);
+            
+            // ✅ **COPY 3X OTOMATIS** (PASTI MASUK PAPAN KLIP!)
+            copyToClipboard(pesan);
+            
+            // URL LANGSUNG KE GRUP WA
+            const urlGrupWA = `https://chat.whatsapp.com/CBQnRYNPz4bHwAFVxcbFnu?text=${encodedPesan}`;
+            window.open(urlGrupWA, '_blank');
+
+            // Tampilkan pesan sukses
+            const messageEl = document.getElementById('message');
+            messageEl.innerHTML = `✅ Absensi ${nama} <strong>SIAP KIRIM!</strong><br>
+            <small>📋 <strong>PESAN UDAH DICOPY!</strong> | Grup WA terbuka<br>
+            Tekan <strong>ENTER</strong> atau <strong>Ctrl+V</strong> kapan saja! 😊</small>`;
+            messageEl.className = 'success';
+
+            // TEST: Cek clipboard (opsional)
+            setTimeout(() => {
+                navigator.clipboard.readText().then(text => {
+                    if (text.includes(nomorAbsen)) {
+                        console.log('🎉 CLIPBOARD CONFIRMED!');
+                    }
+                }).catch(() => {});
+            }, 100);
+
+            // Reset form
+            setTimeout(() => {
+                document.getElementById('absensiForm').reset();
+                messageEl.innerHTML = '';
+                messageEl.className = '';
+            }, 5000);
         });
-
-        // PESAN ABSENSI YANG AKAN LANGSUNG DIKIRIM KE GRUP
-        const pesan = `🎯 *ABSENSI XI-RPL*\n📋 Nomor Absen: ${nomorAbsen}\n👤 Nama: ${nama}\n⏰ Waktu: ${waktu}\n✅ *HADIR*`;
-
-        const encodedPesan = encodeURIComponent(pesan);
-        
-        // ✅ **KOPI DULU** ke clipboard (SEBELUM buka WA)
-        navigator.clipboard.writeText(pesan).then(() => {
-            console.log('✅ Pesan berhasil dicopy!');
-        }).catch(err => {
-            console.log('❌ Copy gagal:', err);
-        });
-        
-        // URL LANGSUNG KE GRUP WA + PESAN PREFILLED
-        const urlGrupWA = `https://chat.whatsapp.com/CBQnRYNPz4bHwAFVxcbFnu?text=${encodedPesan}`;
-
-        // LANGSUNG BUK A WHATSAPP KE GRUP DENGAN PESAN SIAP KIRIM
-        window.open(urlGrupWA, '_blank');
-
-        // Tampilkan pesan sukses YANG LEBIH JELAS
-        const messageEl = document.getElementById('message');
-        messageEl.innerHTML = `✅ Absensi ${nama} <strong>SIAP TERKIRIM!</strong><br>
-        <small>📋 Pesan <strong>SUDAH DICOPY</strong> | WhatsApp grup sudah terbuka<br>
-        Cukup tekan <strong>ENTER</strong> atau tombol Send! 😊</small>`;
-        messageEl.className = 'success';
-
-        // Reset form setelah 5 detik
-        setTimeout(() => {
-            document.getElementById('absensiForm').reset();
-            messageEl.innerHTML = '';
-            messageEl.className = '';
-        }, 5000);
-    });
-        // Fallback copy untuk browser lama
-    function copyToClipboard(text) {
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(text);
-        } else {
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-        }
-    }
-</script>
+    </script>
 </body>
 </html>
