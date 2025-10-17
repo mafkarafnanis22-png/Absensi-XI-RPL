@@ -1,117 +1,134 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Absensi XI RPL</title>
-    <link rel="stylesheet" href="style.css"/>
-    
-    <!-- ✅ FALLBACK COPY UNTUK SEMUA BROWSER -->
-    <script>
-        function copyToClipboard(text) {
-            // Method 1: Modern Clipboard API
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(text).then(() => {
-                    console.log('✅ Modern copy OK');
-                }).catch(err => {
-                    console.log('❌ Modern copy fail:', err);
-                    fallbackCopy(text); // Fallback
-                });
-            } else {
-                fallbackCopy(text); // Fallback
-            }
-        }
-        
-        function fallbackCopy(text) {
-            // Method 2: Old School (PASTI JALAN!)
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            textArea.style.position = 'fixed';
-            textArea.style.left = '-999999px';
-            textArea.style.top = '-999999px';
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            try {
-                const successful = document.execCommand('copy');
-                console.log(successful ? '✅ Fallback copy OK' : '❌ Fallback copy FAIL');
-            } catch (err) {
-                console.log('❌ Fallback error:', err);
-            }
-            document.body.removeChild(textArea);
-        }
-    </script>
-</head>
-<body>
-<div class="container">
-        <img src="rpl.png" alt="Logo Absensi Siswa" class="logo">
-        <h1>ABSENSI XI-RPL</h1>
-        <p class="subtitle">Isi Formulir untuk Absen</p>
-        
-        <form id="absensiForm">
-            <label for="nomorAbsen">Nomor Absen:</label>
-            <input type="number" id="nomorAbsen" required min="1" placeholder="Contoh: 5">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Absensi XI RPL</title>
+  <link rel="stylesheet" href="style.css" />
 
-            <label for="nama">Nama Siswa/Siswi:</label>
-            <input type="text" id="nama" required placeholder="Contoh: Fatimatus Zahra">
-
-            <button type="submit">🚀 Kirim Absensi ke Grup</button>
-        </form>
-        <div id="message"></div>
-        
-        <!-- Link ke Grup WA -->
-        <a href="https://chat.whatsapp.com/CBQnRYNPz4bHwAFVxcbFnu" class="grup-link" target="_blank">Join Grup WhatsApp Kelas <b>(XI RPL 2025/2026)</b></a>
-    </div>
-
-    <script>
-        document.getElementById('absensiForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const nomorAbsen = document.getElementById('nomorAbsen').value;
-            const nama = document.getElementById('nama').value;
-            const waktu = new Date().toLocaleString('id-ID', {
-                hour: '2-digit',
-                minute: '2-digit',
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric'
-            });
-
-            // PESAN ABSENSI
-            const pesan = `🎯 *ABSENSI XI-RPL*\n📋 Nomor Absen: ${nomorAbsen}\n👤 Nama: ${nama}\n⏰ Waktu: ${waktu}\n✅ *HADIR*`;
-
-            const encodedPesan = encodeURIComponent(pesan);
-            
-            // ✅ **COPY 3X OTOMATIS** (PASTI MASUK PAPAN KLIP!)
-            copyToClipboard(pesan);
-            
-            // URL LANGSUNG KE GRUP WA
-            const urlGrupWA = `https://chat.whatsapp.com/CBQnRYNPz4bHwAFVxcbFnu?text=${encodedPesan}`;
-            window.open(urlGrupWA, '_blank');
-
-            // Tampilkan pesan sukses
-            const messageEl = document.getElementById('message');
-            messageEl.innerHTML = `✅ Absensi ${nama} <strong>SIAP KIRIM!</strong><br>
-            <small>📋 <strong>PESAN UDAH DICOPY!</strong> | Grup WA terbuka<br>
-            Tekan <strong>ENTER</strong> atau <strong>Ctrl+V</strong> kapan saja! 😊</small>`;
-            messageEl.className = 'success';
-
-            // TEST: Cek clipboard (opsional)
-            setTimeout(() => {
-                navigator.clipboard.readText().then(text => {
-                    if (text.includes(nomorAbsen)) {
-                        console.log('🎉 CLIPBOARD CONFIRMED!');
-                    }
-                }).catch(() => {});
-            }, 100);
-
-            // Reset form
-            setTimeout(() => {
-                document.getElementById('absensiForm').reset();
-                messageEl.innerHTML = '';
-                messageEl.className = '';
-            }, 5000);
+  <script>
+    // ✅ FUNGSI COPY TEKS KE CLIPBOARD
+    function copyToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+          console.log("✅ Modern copy OK");
+        }).catch(err => {
+          console.log("❌ Modern copy fail:", err);
+          fallbackCopy(text);
         });
-    </script>
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand("copy");
+        console.log("✅ Fallback copy OK");
+      } catch (err) {
+        console.log("❌ Fallback error:", err);
+      }
+      document.body.removeChild(textArea);
+    }
+
+    // ✅ FUNGSI DAPATKAN LOKASI (GPS)
+    function getLocation(callback) {
+      if (!navigator.geolocation) {
+        callback("❌ Lokasi tidak didukung browser kamu");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const lat = position.coords.latitude.toFixed(5);
+          const lon = position.coords.longitude.toFixed(5);
+          const mapsLink = `https://www.google.com/maps?q=${lat},${lon}`;
+          callback(`📍 Lokasi: ${mapsLink}`);
+        },
+        error => {
+          console.warn("Gagal ambil lokasi:", error.message);
+          callback("📍 Lokasi: Tidak diizinkan pengguna");
+        }
+      );
+    }
+
+    // ✅ EVENT SUBMIT ABSENSI
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("absensiForm");
+      const messageEl = document.getElementById("message");
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const nomorAbsen = document.getElementById("nomorAbsen").value;
+        const nama = document.getElementById("nama").value;
+        const waktu = new Date().toLocaleString("id-ID", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        });
+
+        // 🔹 Ambil lokasi dulu sebelum kirim
+        getLocation(lokasi => {
+          const pesan = `🎯 *ABSENSI XI-RPL*\n📋 Nomor Absen: ${nomorAbsen}\n👤 Nama: ${nama}\n⏰ Waktu: ${waktu}\n${lokasi}\n✅ *HADIR*`;
+
+          const encodedPesan = encodeURIComponent(pesan);
+          copyToClipboard(pesan);
+
+          // Buka grup WA (pesan bisa langsung dipaste)
+          const urlGrupWA = `https://chat.whatsapp.com/CBQnRYNPz4bHwAFVxcbFnu?text=${encodedPesan}`;
+          window.open(urlGrupWA, "_blank");
+
+          // Pesan sukses
+          messageEl.innerHTML = `✅ Absensi <b>${nama}</b> berhasil dicatat!<br>
+            <small>📋 Pesan sudah dicopy ke clipboard.<br>
+            Tekan <b>Ctrl + V</b> atau <b>tempel</b> di WhatsApp Grup untuk mengirim. 😊</small>`;
+          messageEl.className = "success";
+
+          // Reset form
+          setTimeout(() => {
+            form.reset();
+            messageEl.innerHTML = "";
+            messageEl.className = "";
+          }, 5000);
+        });
+      });
+    });
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <img src="rpl.png" alt="Logo Absensi Siswa" class="logo" />
+    <h1>ABSENSI XI-RPL</h1>
+    <p class="subtitle">Isi Formulir untuk Absen</p>
+
+    <form id="absensiForm">
+      <label for="nomorAbsen">Nomor Absen:</label>
+      <input type="number" id="nomorAbsen" required min="1" placeholder="Contoh: 5" />
+
+      <label for="nama">Nama Siswa/Siswi:</label>
+      <input type="text" id="nama" required placeholder="Contoh: Fatimatus Zahra" />
+
+      <button type="submit">🚀 Kirim Absensi ke Grup</button>
+    </form>
+
+    <div id="message"></div>
+
+    <a href="https://chat.whatsapp.com/CBQnRYNPz4bHwAFVxcbFnu" class="grup-link" target="_blank">
+      Join Grup WhatsApp Kelas <b>(XI RPL 2025/2026)</b>
+    </a>
+  </div>
 </body>
 </html>
