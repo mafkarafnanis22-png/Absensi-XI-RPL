@@ -28,45 +28,51 @@
     </div>
 
     <script>
-        document.getElementById('absensiForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+    document.getElementById('absensiForm').addEventListener('submit', function(e) {
+        e.preventDefault();
 
-            const nomorAbsen = document.getElementById('nomorAbsen').value;
-            const nama = document.getElementById('nama').value;
-            const waktu = new Date().toLocaleString('id-ID', {
-                hour: '2-digit',
-                minute: '2-digit',
-                day: '2-digit',
-                month: 'long',
-                year: 'numeric'
-            });
-
-            // PESAN ABSENSI YANG AKAN LANGSUNG DIKIRIM KE GRUP
-            const pesan = `🎯 *ABSENSI XI-RPL*\n📋 Nomor Absen: ${nomorAbsen}\n👤 Nama: ${nama}\n⏰ Waktu: ${waktu}\n✅ *HADIR*`;
-
-            const encodedPesan = encodeURIComponent(pesan);
-            
-            // URL LANGSUNG KE GRUP WA + PESAN PREFILLED
-            const urlGrupWA = `https://chat.whatsapp.com/CBQnRYNPz4bHwAFVxcbFnu?text=${encodedPesan}`;
-
-            // LANGSUNG BUK A WHATSAPP KE GRUP DENGAN PESAN SIAP KIRIM
-            window.open(urlGrupWA, '_blank');
-
-            // Auto copy pesan ke clipboard untuk paste ke grup
-            navigator.clipboard.writeText(pesan);
-
-            // Tampilkan pesan sukses
-            const messageEl = document.getElementById('message');
-            messageEl.innerHTML = `✅ Absensi ${nama} <strong>LANGSUNG TERKIRIM!</strong><br><small>WhatsApp grup sudah terbuka otomatis 😊</small>`;
-            messageEl.className = 'success';
-
-            // Reset form setelah 5 detik
-            setTimeout(() => {
-                document.getElementById('absensiForm').reset();
-                messageEl.innerHTML = '';
-                messageEl.className = '';
-            }, 5000);
+        const nomorAbsen = document.getElementById('nomorAbsen').value;
+        const nama = document.getElementById('nama').value;
+        const waktu = new Date().toLocaleString('id-ID', {
+            hour: '2-digit',
+            minute: '2-digit',
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
         });
-    </script>
+
+        // PESAN ABSENSI YANG AKAN LANGSUNG DIKIRIM KE GRUP
+        const pesan = `🎯 *ABSENSI XI-RPL*\n📋 Nomor Absen: ${nomorAbsen}\n👤 Nama: ${nama}\n⏰ Waktu: ${waktu}\n✅ *HADIR*`;
+
+        const encodedPesan = encodeURIComponent(pesan);
+        
+        // ✅ **KOPI DULU** ke clipboard (SEBELUM buka WA)
+        navigator.clipboard.writeText(pesan).then(() => {
+            console.log('✅ Pesan berhasil dicopy!');
+        }).catch(err => {
+            console.log('❌ Copy gagal:', err);
+        });
+        
+        // URL LANGSUNG KE GRUP WA + PESAN PREFILLED
+        const urlGrupWA = `https://chat.whatsapp.com/CBQnRYNPz4bHwAFVxcbFnu?text=${encodedPesan}`;
+
+        // LANGSUNG BUK A WHATSAPP KE GRUP DENGAN PESAN SIAP KIRIM
+        window.open(urlGrupWA, '_blank');
+
+        // Tampilkan pesan sukses YANG LEBIH JELAS
+        const messageEl = document.getElementById('message');
+        messageEl.innerHTML = `✅ Absensi ${nama} <strong>SIAP TERKIRIM!</strong><br>
+        <small>📋 Pesan <strong>SUDAH DICOPY</strong> | WhatsApp grup sudah terbuka<br>
+        Cukup tekan <strong>ENTER</strong> atau tombol Send! 😊</small>`;
+        messageEl.className = 'success';
+
+        // Reset form setelah 5 detik
+        setTimeout(() => {
+            document.getElementById('absensiForm').reset();
+            messageEl.innerHTML = '';
+            messageEl.className = '';
+        }, 5000);
+    });
+</script>
 </body>
 </html>
